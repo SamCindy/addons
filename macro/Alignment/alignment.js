@@ -288,3 +288,67 @@ function alignment(sep) {
     }
     setSelText(list.join(linesep));
 }
+
+function alignmentAll(sep) {
+    if (!hasSel()) {
+        return;
+    }
+
+    var startLine = getSelStartPos().Line;
+    var startCol = 0;
+    var endLine = getSelEndPos().Line;
+    var endCol = getLineText(endLine).length;
+
+    setSel(startLine, startCol, endLine, endCol);
+
+    var sel = getSelText();
+    var linesep = getLinesep(sel);
+    var selLines = sel.split(linesep);
+
+    //Split each line with "sep" into array "lineArr"
+    var lineArr = [];
+    var maxItemNum = 0;
+    for (var i = 0; i < selLines.length; i++) {
+        var itemArr = selLines[i].split(sep);
+        var itemArrNew = [];
+        for (var j = 0; j < itemArr.length; j++) {
+            var item = {contents: "", length: 0};
+            item.contents = itemArr[j].replace(/(^\s*)|(\s*$)/g, '');
+            item.length = getDisplayLength(item.contents);
+            itemArrNew.push(item);
+        }
+        lineArr.push(itemArrNew);
+        if (itemArr.length > maxItemNum) {
+            maxItemNum = itemArr.length;
+        }
+    }
+
+    //Check the maximum item length of each cols of array "lineArr"
+    var maxItemLengthArr = [];
+    for (var j = 0; j < maxItemNum; j++) {
+        var maxItemLength = 0;
+        for (i = 0; i < lineArr.length; i++) {
+            var item = lineArr[i][j];
+            if (item && item.length > maxItemLength) {
+                maxItemLength = item.length;
+            }
+        }
+        maxItemLengthArr.push(maxItemLength);
+    }
+
+    //Combine "lineArr" to align all lines at each "sep"
+    var list = [];
+    for (var i = 0; i < lineArr.length; i++) {
+        var lineStr = "";
+        for (var j = 0; j < lineArr[i].length; j++) {
+            if (j > 0) {
+                lineStr += space(maxItemLengthArr[j-1] - lineArr[i][j-1].length) + " " + sep + " " + lineArr[i][j].contents;
+            } else {
+                lineStr += lineArr[i][j].contents;
+            }
+        }
+        list.push(lineStr);
+    }
+
+    setSelText(list.join(linesep));
+}

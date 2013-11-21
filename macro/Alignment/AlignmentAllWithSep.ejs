@@ -1,0 +1,20 @@
+/*
+  AlignmentWithSep for EverEdit
+  -----------------------------
+    Written by Kaffa (kaffacoffee@outlook.com)
+    Homepage: http://forum.everedit.net/
+    20130717233031
+*/
+Include(App.AppPath + "\\macro\\Alignment\\alignment.js");
+
+(function() {
+    var sep = prompt("Input separator: ", "=");
+    if (!sep) {
+        return;
+    }
+    if (sep.search(/\s/igm) != -1) {
+        alert("The separator shouldn't include space letters (regular expression \s).");
+        return;
+    }
+    alignmentAll(sep);
+})();
